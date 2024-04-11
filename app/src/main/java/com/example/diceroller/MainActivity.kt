@@ -5,6 +5,7 @@
 package com.example.diceroller
 
 import android.os.Bundle
+import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.Image
@@ -16,6 +17,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.material3.Button
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -25,6 +27,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
@@ -59,6 +62,7 @@ fun DiceRollerApp() {
 
 @Composable
 fun DiceWithButtonAndImage(modifier: Modifier = Modifier) {
+
     var result by remember { mutableStateOf(1) }
     val imageResource = when(result){
         1 -> R.drawable.dice_1
@@ -68,6 +72,11 @@ fun DiceWithButtonAndImage(modifier: Modifier = Modifier) {
         5 -> R.drawable.dice_5
         else -> R.drawable.dice_6
     }
+
+    var text by remember { mutableStateOf("") }
+
+    val context = LocalContext.current
+
     Column (
         modifier = Modifier,
         horizontalAlignment = Alignment.CenterHorizontally,
@@ -78,7 +87,25 @@ fun DiceWithButtonAndImage(modifier: Modifier = Modifier) {
             contentDescription = result.toString()
         )
         Spacer(modifier = Modifier.height(16.dp))
-        Button(onClick = { result = (1..6).random() }) {
+        OutlinedTextField(
+            value = text,
+            onValueChange = { text = it },
+            label = { Text("Insira um número") }
+        )
+        Spacer(modifier = Modifier.height(16.dp))
+        Button(
+            onClick = {
+                result = (1..6).random()
+                val numeroDigitado: Int = text.toInt()
+                val toast: Toast
+                if (result == numeroDigitado){
+                    toast = Toast.makeText(context, "Parabéns! Você venceu :)", Toast.LENGTH_SHORT)
+                } else {
+                    toast = Toast.makeText(context, "Que pena! Você perdeu, tente novamente :)", Toast.LENGTH_SHORT)
+                }
+                toast.show()
+            }
+        ) {
             Text(text = stringResource(id = R.string.roll), fontSize = 24.sp)
         }
     }
